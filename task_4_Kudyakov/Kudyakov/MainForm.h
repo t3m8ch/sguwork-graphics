@@ -5,6 +5,7 @@
 #include "Figure.h"
 #include "Drawing.h"
 #include "Files.h"
+#include "Clip.h"
 #include <fstream>
 #include <sstream>
 
@@ -106,6 +107,8 @@ namespace Kudyakov {
 
 		}
 #pragma endregion
+	private: float left = 30, right = 100, top = 20, bottom = 50;
+
 	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) {		
 		float thickness;
 		Vec3 color;
@@ -116,12 +119,7 @@ namespace Kudyakov {
 		Graphics^ g = e->Graphics;
 		g->Clear(Color::Aquamarine);
 
-		Pen^ blackPen = gcnew Pen(Color::Black, 2);
-
-		float Wx = ClientRectangle.Width;
-		float Wy = ClientRectangle.Height;
-
-		drawPic(g, blackPen, figure, T, initT, Vx, Vy, Wx, Wy, true);
+		drawPic(g, figure, T, initT, Vx, Vy, ClientRectangle.Width, ClientRectangle.Height, left, right, top, bottom);
 	}
 
 	private: System::Void MainForm_Resize(System::Object^ sender, System::EventArgs^ e) {

@@ -125,6 +125,7 @@
     <ClCompile Include="MainForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Clip.h" />
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="Figure.h" />
     <ClInclude Include="Files.h" />
