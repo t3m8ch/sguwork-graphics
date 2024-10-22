@@ -159,8 +159,8 @@ namespace Kudyakov {
 	}
 
 	private: System::Void MainForm_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
-		float Wcx = ClientRectangle.Width / 2.f;
-		float Wcy = ClientRectangle.Height / 2.f;
+		float Wcx = (minX + maxX) / 2.f;
+		float Wcy = (minY + maxY) / 2.f;
 
 		switch (e->KeyCode) {
 		case Keys::Q:
