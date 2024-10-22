@@ -20,10 +20,9 @@ namespace Kudyakov {
 
 	float Vx = 1;
 	float Vy = 1;
-	float aspectFig = Vx / Vy;
+	float aspectRect = Vx / Vy;
 
 	Mat3 T = Mat3(1.0f);
-	Mat3 initT;
 
 	/// <summary>
 	/// Сводка для MainForm
@@ -132,24 +131,14 @@ namespace Kudyakov {
 		Pen^ rectPen = gcnew Pen(Color::Black, 2);
 		g->DrawRectangle(rectPen, left, top, Wx, Wy);
 
-		float aspectRect = Wx / Wy;
-		float aspectFig = Vx / Vy;
-		float S = aspectFig < aspectRect ? Wy / Vy : Wx / Vx;
-
-		float Tx = left;
-		float Ty = S * Vy + top;
-
-		initT = translate(Tx, Ty) * scale(S, -S);
-		Mat3 M = T * initT;
-
 		for (int i = 0; i < figure.size(); i++) {
 			Path lines = figure[i];
 			Pen^ pen = gcnew Pen(Color::FromArgb(lines.color.x, lines.color.y, lines.color.z));
 			pen->Width = lines.thickness;
 
-			Vec2 start = normalize(M * Vec3(lines.vertices[0], 1.0));
+			Vec2 start = normalize(T * Vec3(lines.vertices[0], 1.0));
 			for (int j = 1; j < lines.vertices.size(); j++) {
-				Vec2 end = normalize(M * Vec3(lines.vertices[j], 1.0));
+				Vec2 end = normalize(T * Vec3(lines.vertices[j], 1.0));
 				Vec2 tmpEnd = end;
 				if (clip(start, end, minX, maxX, minY, maxY)) {
 					g->DrawLine(pen, start.x, start.y, end.x, end.y);
@@ -269,7 +258,7 @@ namespace Kudyakov {
 			}
 			fileName[openFileDialog->FileName->Length] = '\0';
 
-			loadFigureFromFile(fileName, figure, Vx, Vy, aspectFig);
+			loadFigureFromFile(fileName, figure, Vx, Vy, Wx, Wy, left, top, aspectRect, T);
 			Refresh();
 		}
 	}

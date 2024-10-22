@@ -8,7 +8,18 @@
 #include "Transform.h"
 #include "Figure.h"
 
-void loadFigureFromFile(wchar_t fileName[1024], std::vector<Path>& figure, float& Vx, float& Vy, float& aspectFig) {
+void loadFigureFromFile(
+	wchar_t fileName[1024], 
+	std::vector<Path>& figure, 
+	float& Vx, 
+	float& Vy, 
+	float Wx, 
+	float Wy, 
+	float left,
+	float top,
+	float& aspectRect,
+	Mat3& T
+) {
 	std::ifstream in;
 	in.open(fileName);
 	if (in.is_open()) {
@@ -28,7 +39,15 @@ void loadFigureFromFile(wchar_t fileName[1024], std::vector<Path>& figure, float
 
 				if (cmd == "frame") {
 					s >> Vx >> Vy;
-					aspectFig = Vx / Vy;
+
+					aspectRect = Wx / Wy;
+					float aspectFig = Vx / Vy;
+					float S = aspectFig < aspectRect ? Wy / Vy : Wx / Vx;
+
+					float Tx = left;
+					float Ty = S * Vy + top;
+
+					T = translate(Tx, Ty) * scale(S, -S);
 				}
 				else if (cmd == "color") {
 					s >> r >> g >> b;
