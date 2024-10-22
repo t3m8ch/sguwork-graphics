@@ -3,7 +3,6 @@
 #include "Matrix.h"
 #include "Transform.h"
 #include "Figure.h"
-#include "Drawing.h"
 #include "Files.h"
 #include "Clip.h"
 #include <fstream>
@@ -107,22 +106,61 @@ namespace Kudyakov {
 
 		}
 #pragma endregion
-	private: float left = 30, right = 100, top = 20, bottom = 50;
+	private: 
+		float left = 30, right = 100, top = 20, bottom = 50;
+		float minX = left, maxX;
+		float minY = top, maxY;
+		float Wcx = left, Wcy;
+		float Wx, Wy;
+
+	private: System::Void rectCalc() {
+		maxX = ClientRectangle.Width - right;
+		maxY = ClientRectangle.Height - bottom;
+		Wcy = maxY;
+		Wx = maxX - left;
+		Wy = maxY - top;
+	}
 
 	private: System::Void MainForm_Load(System::Object^ sender, System::EventArgs^ e) {		
-		float thickness;
-		Vec3 color;
-		std::vector<Vec2> vertices;
+		rectCalc();
 	}
 
 	private: System::Void MainForm_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
 		Graphics^ g = e->Graphics;
 		g->Clear(Color::Aquamarine);
 
-		drawPic(g, figure, T, initT, Vx, Vy, ClientRectangle.Width, ClientRectangle.Height, left, right, top, bottom);
+		Pen^ rectPen = gcnew Pen(Color::Black, 2);
+		g->DrawRectangle(rectPen, left, top, Wx, Wy);
+
+		float aspectRect = Wx / Wy;
+		float aspectFig = Vx / Vy;
+		float S = aspectFig < aspectRect ? Wy / Vy : Wx / Vx;
+
+		float Tx = left;
+		float Ty = S * Vy + top;
+
+		initT = translate(Tx, Ty) * scale(S, -S);
+		Mat3 M = T * initT;
+
+		for (int i = 0; i < figure.size(); i++) {
+			Path lines = figure[i];
+			Pen^ pen = gcnew Pen(Color::FromArgb(lines.color.x, lines.color.y, lines.color.z));
+			pen->Width = lines.thickness;
+
+			Vec2 start = normalize(M * Vec3(lines.vertices[0], 1.0));
+			for (int j = 1; j < lines.vertices.size(); j++) {
+				Vec2 end = normalize(M * Vec3(lines.vertices[j], 1.0));
+				Vec2 tmpEnd = end;
+				if (clip(start, end, minX, maxX, minY, maxY)) {
+					g->DrawLine(pen, start.x, start.y, end.x, end.y);
+				}
+				start = tmpEnd;
+			}
+		}
 	}
 
 	private: System::Void MainForm_Resize(System::Object^ sender, System::EventArgs^ e) {
+		rectCalc();
 		Refresh();
 	}
 
