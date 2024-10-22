@@ -22,6 +22,7 @@ namespace Kudyakov {
 	float aspectRect = Vx / Vy;
 
 	Mat3 T = Mat3(1.0f);
+	Mat3 initT;
 
 	/// <summary>
 	/// Сводка для MainForm
@@ -247,7 +248,7 @@ namespace Kudyakov {
 			T = translate(10.f, 0.f) * T;
 			break;
 		case Keys::Escape:
-			T = Mat3(1.f);
+			T = initT;
 			break;
 		default:
 			break;
@@ -296,7 +297,8 @@ namespace Kudyakov {
 							Mat3 S1 = scale(S, -S);
 
 							Mat3 T2 = translate(Wx / 2 + Wcx, Wcy - Wy / 2);
-							T = T2 * (S1 * T1);
+							initT = T2 * (S1 * T1);
+							T = initT;
 						}
 						else if (cmd == "color") {
 							s >> r >> g >> b;
