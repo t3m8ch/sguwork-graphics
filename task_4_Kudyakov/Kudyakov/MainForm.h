@@ -79,7 +79,7 @@ namespace Kudyakov {
 			// btnOpen
 			// 
 			this->btnOpen->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
-			this->btnOpen->Location = System::Drawing::Point(546, 12);
+			this->btnOpen->Location = System::Drawing::Point(773, 12);
 			this->btnOpen->Name = L"btnOpen";
 			this->btnOpen->Size = System::Drawing::Size(75, 23);
 			this->btnOpen->TabIndex = 0;
@@ -91,7 +91,7 @@ namespace Kudyakov {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(633, 743);
+			this->ClientSize = System::Drawing::Size(860, 439);
 			this->Controls->Add(this->btnOpen);
 			this->DoubleBuffered = true;
 			this->KeyPreview = true;
