@@ -17,6 +17,10 @@ Mat3 scale(float Sx, float Sy) {
 	return res;
 }
 
+Mat3 scale(float S) {
+	return scale(S, S);
+}
+
 Mat3 rotate(float theta) {
 	Mat3 res = Mat3(1.0f);
 	res[0][0] = res[1][1] = (float)cos(theta);

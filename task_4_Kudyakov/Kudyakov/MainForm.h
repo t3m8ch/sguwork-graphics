@@ -15,7 +15,7 @@ namespace Kudyakov {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	std::vector<Path> figure;
+	std::vector<Model> models;
 
 	float Vx = 1;
 	float Vy = 1;
@@ -130,19 +130,24 @@ namespace Kudyakov {
 		Pen^ rectPen = gcnew Pen(Color::Black, 2);
 		g->DrawRectangle(rectPen, left, top, Wx, Wy);
 
-		for (int i = 0; i < figure.size(); i++) {
-			Path lines = figure[i];
-			Pen^ pen = gcnew Pen(Color::FromArgb(lines.color.x, lines.color.y, lines.color.z));
-			pen->Width = lines.thickness;
+		for (int k = 0; k < models.size(); k++) {
+			auto figure = models[k].figure;
+			Mat3 TM = T * models[k].modelM;
 
-			Vec2 start = normalize(T * Vec3(lines.vertices[0], 1.0));
-			for (int j = 1; j < lines.vertices.size(); j++) {
-				Vec2 end = normalize(T * Vec3(lines.vertices[j], 1.0));
-				Vec2 tmpEnd = end;
-				if (clip(start, end, minX, maxX, minY, maxY)) {
-					g->DrawLine(pen, start.x, start.y, end.x, end.y);
+			for (int i = 0; i < figure.size(); i++) {
+				Path lines = figure[i];
+				Pen^ pen = gcnew Pen(Color::FromArgb(lines.color.x, lines.color.y, lines.color.z));
+				pen->Width = lines.thickness;
+
+				Vec2 start = normalize(TM * Vec3(lines.vertices[0], 1.0));
+				for (int j = 1; j < lines.vertices.size(); j++) {
+					Vec2 end = normalize(TM * Vec3(lines.vertices[j], 1.0));
+					Vec2 tmpEnd = end;
+					if (clip(start, end, minX, maxX, minY, maxY)) {
+						g->DrawLine(pen, start.x, start.y, end.x, end.y);
+					}
+					start = tmpEnd;
 				}
-				start = tmpEnd;
 			}
 		}
 	}
@@ -260,7 +265,13 @@ namespace Kudyakov {
 			std::ifstream in;
 			in.open(fileName);
 			if (in.is_open()) {
-				figure.clear();
+				models.clear();
+
+				Mat3 M = Mat3(1.f);
+				Mat3 initM;
+				std::vector<Mat3> transforms;
+				std::vector<Path> figure;
+
 				float thickness = 2;
 				float r, g, b;
 				r = g = b = 0;
@@ -312,6 +323,38 @@ namespace Kudyakov {
 							}
 
 							figure.push_back(Path(vertices, Vec3(r, g, b), thickness));
+						}
+						else if (cmd == "model") {
+							float mVcx, mVcy, mVx, mVy;
+							s >> mVcx >> mVcy >> mVx >> mVy;
+							float S = mVx / mVy < 1 ? 2.f : 2.f / mVx;
+							initM = scale(S) * translate(-mVcx, -mVcy);
+							figure.clear();
+						}
+						else if (cmd == "figure") {
+							models.push_back(Model(figure, M * initM));
+						}
+						else if (cmd == "translate") {
+							float Tx, Ty;
+							s >> Tx >> Ty;
+							M = translate(Tx, Ty) * M;
+						}
+						else if (cmd == "scale") {
+							float S;
+							s >> S;
+							M = scale(S) * M;
+						}
+						else if (cmd == "rotate") {
+							float theta;
+							s >> theta;
+							M = rotate(-theta / 180.0f * Math::PI) * M;
+						}
+						else if (cmd == "pushTransform") {
+							transforms.push_back(M);
+						}
+						else if (cmd == "popTransform") {
+							M = transforms.back();
+							transforms.pop_back();
 						}
 					}
 
