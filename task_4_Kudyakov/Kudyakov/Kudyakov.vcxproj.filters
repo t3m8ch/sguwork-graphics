@@ -32,9 +32,6 @@
     <ClInclude Include="Figure.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Files.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Clip.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
