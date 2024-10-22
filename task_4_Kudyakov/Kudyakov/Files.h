@@ -15,6 +15,8 @@ void loadFigureFromFile(
 	float& Vy, 
 	float Wx, 
 	float Wy, 
+	float Wcx,
+	float Wcy,
 	float left,
 	float top,
 	float& aspectRect,
@@ -42,12 +44,13 @@ void loadFigureFromFile(
 
 					aspectRect = Wx / Wy;
 					float aspectFig = Vx / Vy;
+
+					Mat3 T1 = translate(-Vx / 2, -Vy / 2);
 					float S = aspectFig < aspectRect ? Wy / Vy : Wx / Vx;
+					Mat3 S1 = scale(S, -S);
 
-					float Tx = left;
-					float Ty = S * Vy + top;
-
-					T = translate(Tx, Ty) * scale(S, -S);
+					Mat3 T2 = translate(Wx / 2 + Wcx, Wcy - Wy / 2);
+					T = T2 * (S1 * T1);
 				}
 				else if (cmd == "color") {
 					s >> r >> g >> b;

@@ -258,7 +258,7 @@ namespace Kudyakov {
 			}
 			fileName[openFileDialog->FileName->Length] = '\0';
 
-			loadFigureFromFile(fileName, figure, Vx, Vy, Wx, Wy, left, top, aspectRect, T);
+			loadFigureFromFile(fileName, figure, Vx, Vy, Wx, Wy, Wcx, Wcy, left, top, aspectRect, T);
 			Refresh();
 		}
 	}
